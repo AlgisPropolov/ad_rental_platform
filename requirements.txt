@@ -1,0 +1,9 @@
+Django>=5.0
+python-dotenv
+psycopg2-binary
+python-docx
+pandas
+openpyxl
+django-crispy-forms
+django-filter
+django-ckeditor

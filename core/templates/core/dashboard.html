@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Панель управления</title>
+    <style>
+        body { font-family: Arial; margin: 20px; background-color: #f5f5f5; }
+        h1 { color: #333; }
+        .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <h1>Панель управления</h1>
+
+    <div class="card">
+        <h2>💰 Финансовая аналитика</h2>
+        <p>Общий доход: {{ finance.total_income }} ₽</p>
+        <p>Ожидается оплат: {{ finance.unpaid_amount }} ₽</p>
+    </div>
+
+    <div class="card">
+        <h2>📍 Объекты</h2>
+        <p>Всего: {{ assets.total_assets }}</p>
+        <p>Занятых: {{ assets.used_assets }}</p>
+        <p>Свободных: {{ assets.available_assets }}</p>
+    </div>
+
+    <div class="card">
+        <h2>📋 Задачи на ближайшие 3 дня</h2>
+        {% if tasks %}
+            <ul>
+                {% for task in tasks %}
+                    <li>{{ task.description }} (до {{ task.due_date }})</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Нет срочных задач.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
