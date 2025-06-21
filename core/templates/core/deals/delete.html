@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Удаление сделки</title>
+</head>
+<body>
+    <h1>Удалить сделку?</h1>
+    <p>Вы уверены, что хотите удалить сделку "{{ deal.title }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Да, удалить</button>
+        <a href="{% url 'list_deals' %}">Отмена</a>
+    </form>
+</body>
+</html>

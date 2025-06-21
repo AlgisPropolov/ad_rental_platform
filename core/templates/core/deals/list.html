@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Сделки</title>
+    <style>
+        body { font-family: Arial; margin: 20px; background-color: #f5f5f5; }
+        h1 { color: #333; }
+        .deal-card { background: white; padding: 15px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body>
+    <h1>📄 Все сделки</h1>
+    <a href="{% url 'create_deal' %}">➕ Добавить сделку</a>
+    {% for deal in deals %}
+        <div class="deal-card">
+            <h3>{{ deal.title }}</h3>
+            <p>Клиент: {{ deal.client.name }}</p>
+            <p>Статус: {{ deal.get_status_display }}</p>
+            <p>Объекты:
+                {% for asset in deal.assets.all %}{{ asset.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+            </p>
+            <p>
+                <a href="{% url 'edit_deal' deal.pk %}">✏️ Редактировать</a> |
+                <a href="{% url 'delete_deal' deal.pk %}">🗑️ Удалить</a>
+            </p>
+        </div>
+    {% endfor %}
+</body>
+</html>

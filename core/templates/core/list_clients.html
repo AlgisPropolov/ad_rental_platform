@@ -1,0 +1,14 @@
+<h1>Список клиентов</h1>
+<form method="get">
+    <input type="text" name="q" placeholder="Поиск..." value="{{ query }}">
+    <button type="submit">🔍</button>
+</form>
+<ul>
+    {% for client in clients %}
+        <li>{{ client.name }} | {{ client.email }} | {{ client.phone }}</li>
+    {% empty %}
+        <li>Нет клиентов</li>
+    {% endfor %}
+</ul>
+<a href="{% url 'create_client' %}">➕ Добавить клиента</a>
+<a href="{% url 'dashboard' %}">← Назад</a>

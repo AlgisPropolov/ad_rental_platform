@@ -1,0 +1,19 @@
+<h1>Список объектов</h1>
+<form method="get">
+    <select name="type">
+        <option value="">Все типы</option>
+        <option value="bus" {% if asset_type == "bus" %}selected{% endif %}>Автобус</option>
+        <option value="stop" {% if asset_type == "stop" %}selected{% endif %}>Остановка</option>
+        <option value="screen" {% if asset_type == "screen" %}selected{% endif %}>Медиаэкран</option>
+    </select>
+    <button type="submit">Фильтр</button>
+</form>
+<ul>
+    {% for asset in assets %}
+        <li>{{ asset.name }} | {{ asset.get_asset_type_display }} | {{ asset.location }}</li>
+    {% empty %}
+        <li>Нет объектов</li>
+    {% endfor %}
+</ul>
+<a href="{% url 'create_asset' %}">➕ Добавить объект</a>
+<a href="{% url 'dashboard' %}">← Назад</a>

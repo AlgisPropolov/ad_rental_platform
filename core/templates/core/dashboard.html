@@ -4,12 +4,52 @@
     <meta charset="UTF-8">
     <title>Панель управления</title>
     <style>
-        body { font-family: Arial; margin: 20px; background-color: #f5f5f5; }
-        h1 { color: #333; }
-        .card { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        body {
+            font-family: Arial;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .nav-links {
+            margin-bottom: 20px;
+        }
+        .nav-links a {
+            margin-right: 15px;
+            text-decoration: none;
+            color: #0366d6;
+            font-weight: bold;
+        }
+        a.button {
+            display: inline-block;
+            padding: 10px 15px;
+            margin-top: 10px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        a.button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
+
+    <div class="nav-links">
+        <a href="{% url 'list_clients' %}">📁 Все клиенты</a>
+        <a href="{% url 'list_assets' %}">🏙️ Все объекты</a>
+    </div>
+
     <h1>Панель управления</h1>
 
     <div class="card">
@@ -23,6 +63,12 @@
         <p>Всего: {{ assets.total_assets }}</p>
         <p>Занятых: {{ assets.used_assets }}</p>
         <p>Свободных: {{ assets.available_assets }}</p>
+        <a href="{% url 'create_asset' %}" class="button">➕ Добавить объект</a>
+    </div>
+
+    <div class="card">
+        <h2>🏢 Контрагенты</h2>
+        <a href="{% url 'create_client' %}" class="button">➕ Добавить клиента</a>
     </div>
 
     <div class="card">
@@ -37,5 +83,6 @@
             <p>Нет срочных задач.</p>
         {% endif %}
     </div>
+
 </body>
 </html>

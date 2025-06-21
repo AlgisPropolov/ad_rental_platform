@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Шахматка доступности</title>
+    <style>
+        body { font-family: sans-serif; margin: 40px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background: #eee; }
+        .booked { background-color: #ffdcdc; }
+        .free { background-color: #d4f9d4; }
+    </style>
+</head>
+<body>
+    <h1>Шахматка доступности рекламных объектов</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Объект</th>
+                <th>Тип</th>
+                <th>Местоположение</th>
+                <th>С даты</th>
+                <th>По дату</th>
+                <th>Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for slot in slots %}
+                <tr class="{% if slot.is_booked %}booked{% else %}free{% endif %}">
+                    <td>{{ slot.asset.name }}</td>
+                    <td>{{ slot.asset.get_asset_type_display }}</td>
+                    <td>{{ slot.asset.location }}</td>
+                    <td>{{ slot.start_date }}</td>
+                    <td>{{ slot.end_date }}</td>
+                    <td>
+                        {% if slot.is_booked %}
+                            Забронировано
+                        {% else %}
+                            Свободно
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p><a href="/">← Вернуться на главную</a></p>
+</body>
+</html>
