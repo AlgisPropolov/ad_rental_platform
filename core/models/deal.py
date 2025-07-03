@@ -1,3 +1,5 @@
+# ✅ core/models/deals.py
+
 from django.db import models
 from .client import Client
 from .asset import Asset

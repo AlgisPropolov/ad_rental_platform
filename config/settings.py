@@ -19,8 +19,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'core',  # наше основное приложение
+    'core',    # основное приложение
+    'users',   # 🔥 добавили кастомных пользователей
 ]
+
+# 👤 Указание кастомной модели пользователя
+AUTH_USER_MODEL = 'users.User'
 
 # ⚙️ Middleware
 MIDDLEWARE = [
@@ -52,6 +56,10 @@ TEMPLATES = [
         },
     },
 ]
+
+# ✅ Указываем кастомную модель пользователя
+AUTH_USER_MODEL = 'users.User'
+
 
 # 🚀 WSGI-приложение
 WSGI_APPLICATION = 'config.wsgi.application'
@@ -93,3 +101,5 @@ SECRET_KEY = 'django-insecure-замени-на-свой-настоящий-кл
 
 # ✅ Значения по умолчанию для primary key
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+AUTH_USER_MODEL = 'users.User'
+

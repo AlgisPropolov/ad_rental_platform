@@ -1,0 +1,19 @@
+<!-- core/templates/core/contracts/list.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Список договоров</title>
+</head>
+<body>
+    <h1>📄 Все договоры</h1>
+    <a href="{% url 'create_contract' %}">+ Создать договор</a>
+    <ul>
+        {% for contract in contracts %}
+            <li>{{ contract.client.name }} — {{ contract.asset.name }} — {{ contract.amount }} ₽ — {{ contract.start_date }} → {{ contract.end_date }}</li>
+        {% empty %}
+            <li>Договоров пока нет</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

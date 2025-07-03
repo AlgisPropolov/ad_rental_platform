@@ -1,30 +1,71 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Сделки</title>
-    <style>
-        body { font-family: Arial; margin: 20px; background-color: #f5f5f5; }
-        h1 { color: #333; }
-        .deal-card { background: white; padding: 15px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    </style>
-</head>
-<body>
-    <h1>📄 Все сделки</h1>
-    <a href="{% url 'create_deal' %}">➕ Добавить сделку</a>
-    {% for deal in deals %}
-        <div class="deal-card">
-            <h3>{{ deal.title }}</h3>
-            <p>Клиент: {{ deal.client.name }}</p>
-            <p>Статус: {{ deal.get_status_display }}</p>
-            <p>Объекты:
-                {% for asset in deal.assets.all %}{{ asset.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
-            </p>
-            <p>
-                <a href="{% url 'edit_deal' deal.pk %}">✏️ Редактировать</a> |
-                <a href="{% url 'delete_deal' deal.pk %}">🗑️ Удалить</a>
-            </p>
-        </div>
-    {% endfor %}
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Сделки{% endblock %}
+{% block content %}
+
+<h1>💼 Сделки</h1>
+
+<form method="get" style="margin-bottom: 20px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <input type="text" name="q" placeholder="🔍 Поиск по клиенту или объекту..." value="{{ query }}" style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+    
+    <select name="status" style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
+        <option value="">Все статусы</option>
+        <option value="draft" {% if status == 'draft' %}selected{% endif %}>Черновик</option>
+        <option value="sent" {% if status == 'sent' %}selected{% endif %}>Отправлено КП</option>
+        <option value="signed" {% if status == 'signed' %}selected{% endif %}>Подписан договор</option>
+        <option value="closed" {% if status == 'closed' %}selected{% endif %}>Завершено</option>
+    </select>
+
+    <label>
+        С:
+        <input type="date" name="start" value="{{ start }}" style="padding: 6px; border-radius: 6px; border: 1px solid #ccc;">
+    </label>
+    <label>
+        По:
+        <input type="date" name="end" value="{{ end }}" style="padding: 6px; border-radius: 6px; border: 1px solid #ccc;">
+    </label>
+
+    <button type="submit" style="padding: 8px 15px; background: #007bff; color: white; border: none; border-radius: 6px;">🔎 Фильтр</button>
+    <a href="{% url 'list_deals' %}" style="margin-left: 10px;">✖️ Очистить</a>
+    <a href="{% url 'create_deal' %}" class="button" style="float: right;">➕ Новая сделка</a>
+</form>
+
+<table style="width: 100%; background: white; border-collapse: collapse; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <thead style="background: #f9f9f9;">
+        <tr>
+            <th style="padding: 10px; text-align: left;">Название</th>
+            <th style="padding: 10px; text-align: left;">Клиент</th>
+            <th style="padding: 10px; text-align: left;">Объекты</th>
+            <th style="padding: 10px; text-align: left;">Статус</th>
+            <th style="padding: 10px; text-align: left;">Дата</th>
+            <th style="padding: 10px;"></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for deal in deals %}
+            <tr style="{% if deal.status != 'closed' and deal.created_at.date < today %}background-color: #fff3f3;{% endif %}">
+                <td style="padding: 10px;">{{ deal.title }}</td>
+                <td style="padding: 10px;">{{ deal.client.name }}</td>
+                <td style="padding: 10px;">
+                    {% for asset in deal.assets.all %}
+                        🏙️ {{ asset.name }}<br>
+                    {% endfor %}
+                </td>
+                <td style="padding: 10px;">{{ deal.get_status_display }}</td>
+                <td style="padding: 10px;">{{ deal.created_at|date:"d.m.Y" }}</td>
+                <td style="padding: 10px;">
+                    <a href="{% url 'edit_deal' deal.pk %}">✏️</a>
+                    <a href="{% url 'delete_deal' deal.pk %}">🗑️</a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="6" style="padding: 20px; text-align: center;">Нет сделок</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<br>
+<a href="?export=csv" style="text-decoration: none; color: #007bff;">📁 Экспорт в CSV</a>
+
+{% endblock %}

@@ -1,0 +1,17 @@
+<!-- core/templates/core/contracts/create.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Создание договора</title>
+</head>
+<body>
+    <h1>Создание договора</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Сохранить</button>
+    </form>
+    <a href="{% url 'list_contracts' %}">← Назад</a>
+</body>
+</html>

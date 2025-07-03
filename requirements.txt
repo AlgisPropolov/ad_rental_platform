@@ -1,9 +1,23 @@
-Django>=5.0
-python-dotenv
-psycopg2-binary
-python-docx
-pandas
-openpyxl
-django-crispy-forms
-django-filter
-django-ckeditor
+### Основные зависимости
+Django>=5.0,<5.1
+python-dotenv==1.0.0
+
+### База данных
+psycopg2-binary==2.9.9
+
+### Документы и отчеты
+python-docx==0.8.11
+pandas==2.2.1
+openpyxl==3.1.2
+xlsxwriter==3.1.9
+
+### Django расширения
+django-crispy-forms==2.1
+django-filter==23.5
+django-ckeditor==6.7.0
+django-tables2==2.7.0
+django-widget-tweaks==1.5.0
+django-import-export==3.3.4
+
+### Утилиты
+python-dateutil==2.8.2

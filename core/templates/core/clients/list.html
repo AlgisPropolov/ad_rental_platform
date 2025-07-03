@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Клиенты{% endblock %}
+{% block content %}
+<h1>👤 Клиенты</h1>
+<form method="get">
+  {{ form.search }} <button>🔍 Найти</button>
+  <a href="?">✖️ Очистить</a>
+</form>
+<ul>
+  {% for client in clients %}
+    <li>{{ client.name }} {% if client.inn %}({{ client.inn }}){% endif %}</li>
+  {% empty %}
+    <li>Нет клиентов</li>
+  {% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,70 @@
+<!-- templates/core/availability/index.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Шахматка доступности</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f7f7f7; padding: 20px; }
+        h1 { color: #333; }
+
+        .filter-form {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .asset-block {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .slot { margin-bottom: 8px; }
+        .booked { color: red; font-weight: bold; }
+        .free { color: green; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h1>📅 Шахматка доступности</h1>
+
+    <form method="get" class="filter-form">
+        <label>Дата:
+            <input type="date" name="date" value="{{ request.GET.date }}">
+        </label>
+        <label>Тип объекта:
+            <select name="asset_type">
+                <option value="">Все</option>
+                <option value="bus" {% if request.GET.asset_type == 'bus' %}selected{% endif %}>Автобус</option>
+                <option value="stop" {% if request.GET.asset_type == 'stop' %}selected{% endif %}>Остановка</option>
+                <option value="screen" {% if request.GET.asset_type == 'screen' %}selected{% endif %}>Медиаэкран</option>
+            </select>
+        </label>
+        <button type="submit">🔍 Фильтр</button>
+    </form>
+
+    {% for asset_id, data in grouped_slots.items %}
+        <div class="asset-block">
+            <h2>🏙️ {{ data.asset.name }} ({{ data.asset.get_asset_type_display }})</h2>
+            {% for slot in data.slots %}
+                <div class="slot">
+                    {{ slot.start_date }} — {{ slot.end_date }} :
+                    {% if slot.is_booked %}
+                        <span class="booked">Занято</span>
+                    {% else %}
+                        <span class="free">Свободно</span>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% empty %}
+        <p>Нет данных о доступности.</p>
+    {% endfor %}
+
+</body>
+</html>

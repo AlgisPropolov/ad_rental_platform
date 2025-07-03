@@ -1,16 +1,15 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Удаление сделки</title>
-</head>
-<body>
-    <h1>Удалить сделку?</h1>
-    <p>Вы уверены, что хотите удалить сделку "{{ deal.title }}"?</p>
-    <form method="post">
-        {% csrf_token %}
-        <button type="submit">Да, удалить</button>
-        <a href="{% url 'list_deals' %}">Отмена</a>
-    </form>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Удалить сделку{% endblock %}
+{% block content %}
+<h1 style="color: #c00;">🗑️ Удаление сделки</h1>
+
+<p>Вы уверены, что хотите удалить сделку <strong>{{ deal.title }}</strong> для клиента <strong>{{ deal.client.name }}</strong>?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" style="padding: 10px 20px; background: #dc3545; color: white; border: none; border-radius: 8px; cursor: pointer;">
+        ✅ Удалить
+    </button>
+    <a href="{% url 'list_deals' %}" style="margin-left: 20px;">❌ Отмена</a>
+</form>
+{% endblock %}

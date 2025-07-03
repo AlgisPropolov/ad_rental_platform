@@ -1,0 +1,15 @@
+<!-- templates/core/payments/list.html -->
+{% extends "base.html" %}
+{% block content %}
+<h1>💰 Платежи</h1>
+
+<a href="{% url 'create_payment' %}">➕ Добавить платёж</a>
+<ul>
+    {% for p in payments %}
+        <li>
+            {{ p.date }} — {{ p.amount }} ₽ — {{ p.contract.client.name }} —
+            {% if p.is_confirmed %} ✅ Подтверждён {% else %} ❌ Не подтверждён {% endif %}
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}

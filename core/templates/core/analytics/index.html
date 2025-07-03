@@ -1,0 +1,57 @@
+<!-- ✅ templates/core/analytics/index.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>📊 Аналитика</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body { font-family: Arial; background: #f7f7f7; padding: 30px; }
+        .chart-box { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .filters { margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>📊 Аналитика и отчёты</h1>
+
+    <form method="get" class="filters">
+        <label>От: <input type="date" name="start" value="{{ start }}"></label>
+        <label>До: <input type="date" name="end" value="{{ end }}"></label>
+        <button type="submit">🔍 Обновить</button>
+    </form>
+
+    <div class="chart-box">
+        <h2>💰 Доход по месяцам</h2>
+        <div id="income_chart"></div>
+    </div>
+
+    <div class="chart-box">
+        <h2>📈 Кол-во новых сделок</h2>
+        <div id="deals_chart"></div>
+    </div>
+
+    <div class="chart-box">
+        <h2>🏙️ Загруженность объектов</h2>
+        <p><strong>{{ utilization }}%</strong> — объектов задействовано в текущих сделках</p>
+    </div>
+
+    <script>
+        const incomeData = {
+            x: {{ income_labels|safe }},
+            y: {{ income_values|safe }},
+            type: 'bar',
+            marker: { color: 'green' }
+        };
+        Plotly.newPlot('income_chart', [incomeData], { margin: { t: 30 } });
+
+        const dealsData = {
+            x: {{ deals_labels|safe }},
+            y: {{ deals_values|safe }},
+            type: 'bar',
+            marker: { color: 'blue' }
+        };
+        Plotly.newPlot('deals_chart', [dealsData], { margin: { t: 30 } });
+    </script>
+</body>
+</html>

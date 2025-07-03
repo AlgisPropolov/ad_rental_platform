@@ -1,15 +1,17 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Редактирование сделки</title>
-</head>
-<body>
-    <h1>✏️ Редактировать сделку: {{ deal.title }}</h1>
-    <form method="post">
-        {% csrf_token %}
+{% extends "base.html" %}
+{% block title %}Редактировать сделку{% endblock %}
+{% block content %}
+<h1>✏️ Редактировать сделку</h1>
+
+<form method="post">
+    {% csrf_token %}
+    <div style="background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 500px;">
         {{ form.as_p }}
-        <button type="submit">Сохранить изменения</button>
-    </form>
-</body>
-</html>
+        <button type="submit" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer;">
+            💾 Сохранить изменения
+        </button>
+    </div>
+</form>
+
+<a href="{% url 'list_deals' %}" style="display: inline-block; margin-top: 20px;">⬅️ Назад к списку сделок</a>
+{% endblock %}

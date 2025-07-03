@@ -21,6 +21,13 @@
       <sourceFolder url="file://$MODULE_DIR$/core/migrations" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/core/templates/core/deals" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/static" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/core/availability" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/core/templates/core/contracts" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/core/templates/core/payments" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/core/clients" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/core/templates/core/analytics" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/core/templates/core/assets" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/core/templates/core/clients" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.12 (golovastik4)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

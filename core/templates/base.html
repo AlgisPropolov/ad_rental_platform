@@ -1,10 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>{% block title %}CRM аренды{% endblock %}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+        }
+        nav {
+            background: #222;
+            padding: 15px;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            padding: 20px;
+        }
+
+        /* 🔘 Стили для блока быстрых ссылок */
+        .nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .nav-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.2s ease;
+        }
+        .nav-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
+
+    <nav>
+        <a href="{% url 'dashboard' %}">🏠 Главная</a>
+        <a href="{% url 'list_clients' %}">👤 Клиенты</a>
+        <a href="{% url 'list_assets' %}">🏙️ Объекты</a>
+        <a href="{% url 'list_deals' %}">💼 Сделки</a>
+        <a href="{% url 'list_contracts' %}">📜 Договоры</a>
+        <a href="{% url 'list_payments' %}">💰 Платежи</a>
+        <a href="{% url 'list_tasks' %}">📝 Задачи</a>
+        <a href="{% url 'availability' %}">📅 Шахматка</a>
+        <a href="{% url 'analytics' %}">📊 Аналитика</a>
+    </nav>
+
+    <div class="container">
+        <!-- 🔘 Быстрые ссылки кнопками -->
+        <div class="nav-links">
+            <a href="{% url 'list_clients' %}" class="nav-btn">📁 Все клиенты</a>
+            <a href="{% url 'list_assets' %}" class="nav-btn">🏙️ Все объекты</a>
+            <a href="{% url 'list_deals' %}" class="nav-btn">💼 Все сделки</a>
+            <a href="{% url 'list_contracts' %}" class="nav-btn">📜 Договоры</a>
+            <a href="{% url 'list_payments' %}" class="nav-btn">💰 Платежи</a>
+            <a href="{% url 'list_tasks' %}" class="nav-btn">📝 Задачи</a>
+            <a href="{% url 'availability' %}" class="nav-btn">📅 Шахматка</a>
+            <a href="{% url 'analytics' %}" class="nav-btn">📊 Аналитика</a>
+        </div>
+
+        {% block content %}
+        {% endblock %}
+    </div>
 
 </body>
 </html>
