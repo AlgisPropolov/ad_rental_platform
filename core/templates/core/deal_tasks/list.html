@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Задачи по сделкам</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Сделка</th>
+            <th>Описание</th>
+            <th>Статус</th>
+            <th>Срок</th>
+            <th>Приоритет</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for task in tasks %}
+        <tr>
+            <td>{{ task.deal.title }}</td>
+            <td>{{ task.description }}</td>
+            <td>{% if task.is_done %}Выполнено{% else %}В работе{% endif %}</td>
+            <td>{{ task.due_date }}</td>
+            <td>{{ task.get_priority_display }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

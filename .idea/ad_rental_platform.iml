@@ -5,6 +5,7 @@
       <sourceFolder url="file://$MODULE_DIR$" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/config" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/core" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/core" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/core/forms" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/core/models" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/core/services" isTestSource="false" />
@@ -28,6 +29,12 @@
       <sourceFolder url="file://$MODULE_DIR$/core/templates/core/analytics" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/core/templates/core/assets" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/core/templates/core/clients" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/analitics" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/contracts" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/core/analytics" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/core/templates/core/availability" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/core/templates/core/deal_tasks" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/templates" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.12 (golovastik4)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

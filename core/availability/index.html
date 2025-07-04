@@ -1,70 +1,64 @@
-<!-- templates/core/availability/index.html -->
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Шахматка доступности</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f7f7f7; padding: 20px; }
-        h1 { color: #333; }
+{% extends "base.html" %}
 
-        .filter-form {
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
+{% block title %}Шахматка доступности{% endblock %}
 
-        .asset-block {
-            background: white;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .slot { margin-bottom: 8px; }
-        .booked { color: red; font-weight: bold; }
-        .free { color: green; font-weight: bold; }
-    </style>
-</head>
-<body>
-
-    <h1>📅 Шахматка доступности</h1>
-
-    <form method="get" class="filter-form">
-        <label>Дата:
-            <input type="date" name="date" value="{{ request.GET.date }}">
-        </label>
-        <label>Тип объекта:
-            <select name="asset_type">
-                <option value="">Все</option>
-                <option value="bus" {% if request.GET.asset_type == 'bus' %}selected{% endif %}>Автобус</option>
-                <option value="stop" {% if request.GET.asset_type == 'stop' %}selected{% endif %}>Остановка</option>
-                <option value="screen" {% if request.GET.asset_type == 'screen' %}selected{% endif %}>Медиаэкран</option>
-            </select>
-        </label>
-        <button type="submit">🔍 Фильтр</button>
-    </form>
-
-    {% for asset_id, data in grouped_slots.items %}
-        <div class="asset-block">
-            <h2>🏙️ {{ data.asset.name }} ({{ data.asset.get_asset_type_display }})</h2>
-            {% for slot in data.slots %}
-                <div class="slot">
-                    {{ slot.start_date }} — {{ slot.end_date }} :
-                    {% if slot.is_booked %}
-                        <span class="booked">Занято</span>
-                    {% else %}
-                        <span class="free">Свободно</span>
-                    {% endif %}
-                </div>
-            {% endfor %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-6">
+                <i class="bi bi-calendar-check"></i> Шахматка доступности
+            </h1>
         </div>
-    {% empty %}
-        <p>Нет данных о доступности.</p>
-    {% endfor %}
+    </div>
 
-</body>
-</html>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Актив</th>
+                            <th>Тип</th>
+                            <th>Местоположение</th>
+                            <th>Статус</th>
+                            <th>Период</th>
+                            <th>Дней осталось</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for slot in slots %}
+                        <tr class="{% if not slot.is_available %}table-danger{% endif %}">
+                            <td>
+                                <a href="#" class="text-decoration-none">
+                                    {{ slot.asset.name }}
+                                </a>
+                            </td>
+                            <td>{{ slot.asset.get_asset_type_display }}</td>
+                            <td>{{ slot.asset.location }}</td>
+                            <td>
+                                <span class="badge {% if slot.is_available %}bg-success{% else %}bg-danger{% endif %}">
+                                    {% if slot.is_available %}Доступен{% else %}Занят{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                {{ slot.start_date|date:"d.m.Y" }} - {{ slot.end_date|date:"d.m.Y" }}
+                            </td>
+                            <td>
+                                {{ slot.end_date|timeuntil:slot.start_date }}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4 text-muted">
+                                Нет данных о доступности
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -2,70 +2,173 @@
 {% block title %}Сделки{% endblock %}
 {% block content %}
 
-<h1>💼 Сделки</h1>
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-6">
+                <i class="bi bi-briefcase"></i> Сделки
+                <a href="{% url 'create_deal' %}" class="btn btn-primary float-end">
+                    <i class="bi bi-plus-lg"></i> Новая сделка
+                </a>
+            </h1>
+        </div>
+    </div>
 
-<form method="get" style="margin-bottom: 20px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-    <input type="text" name="q" placeholder="🔍 Поиск по клиенту или объекту..." value="{{ query }}" style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-    
-    <select name="status" style="padding: 8px; border-radius: 6px; border: 1px solid #ccc;">
-        <option value="">Все статусы</option>
-        <option value="draft" {% if status == 'draft' %}selected{% endif %}>Черновик</option>
-        <option value="sent" {% if status == 'sent' %}selected{% endif %}>Отправлено КП</option>
-        <option value="signed" {% if status == 'signed' %}selected{% endif %}>Подписан договор</option>
-        <option value="closed" {% if status == 'closed' %}selected{% endif %}>Завершено</option>
-    </select>
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" name="q" class="form-control"
+                               placeholder="Поиск по клиенту или объекту..." value="{{ query }}">
+                    </div>
+                </div>
 
-    <label>
-        С:
-        <input type="date" name="start" value="{{ start }}" style="padding: 6px; border-radius: 6px; border: 1px solid #ccc;">
-    </label>
-    <label>
-        По:
-        <input type="date" name="end" value="{{ end }}" style="padding: 6px; border-radius: 6px; border: 1px solid #ccc;">
-    </label>
+                <div class="col-md-2">
+                    <select name="status" class="form-select">
+                        <option value="">Все статусы</option>
+                        <option value="draft" {% if status == 'draft' %}selected{% endif %}>Черновик</option>
+                        <option value="sent" {% if status == 'sent' %}selected{% endif %}>Отправлено КП</option>
+                        <option value="signed" {% if status == 'signed' %}selected{% endif %}>Подписан договор</option>
+                        <option value="closed" {% if status == 'closed' %}selected{% endif %}>Завершено</option>
+                    </select>
+                </div>
 
-    <button type="submit" style="padding: 8px 15px; background: #007bff; color: white; border: none; border-radius: 6px;">🔎 Фильтр</button>
-    <a href="{% url 'list_deals' %}" style="margin-left: 10px;">✖️ Очистить</a>
-    <a href="{% url 'create_deal' %}" class="button" style="float: right;">➕ Новая сделка</a>
-</form>
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <span class="input-group-text">С:</span>
+                        <input type="date" name="start" class="form-control" value="{{ start }}">
+                    </div>
+                </div>
 
-<table style="width: 100%; background: white; border-collapse: collapse; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-    <thead style="background: #f9f9f9;">
-        <tr>
-            <th style="padding: 10px; text-align: left;">Название</th>
-            <th style="padding: 10px; text-align: left;">Клиент</th>
-            <th style="padding: 10px; text-align: left;">Объекты</th>
-            <th style="padding: 10px; text-align: left;">Статус</th>
-            <th style="padding: 10px; text-align: left;">Дата</th>
-            <th style="padding: 10px;"></th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for deal in deals %}
-            <tr style="{% if deal.status != 'closed' and deal.created_at.date < today %}background-color: #fff3f3;{% endif %}">
-                <td style="padding: 10px;">{{ deal.title }}</td>
-                <td style="padding: 10px;">{{ deal.client.name }}</td>
-                <td style="padding: 10px;">
-                    {% for asset in deal.assets.all %}
-                        🏙️ {{ asset.name }}<br>
-                    {% endfor %}
-                </td>
-                <td style="padding: 10px;">{{ deal.get_status_display }}</td>
-                <td style="padding: 10px;">{{ deal.created_at|date:"d.m.Y" }}</td>
-                <td style="padding: 10px;">
-                    <a href="{% url 'edit_deal' deal.pk %}">✏️</a>
-                    <a href="{% url 'delete_deal' deal.pk %}">🗑️</a>
-                </td>
-            </tr>
-        {% empty %}
-            <tr>
-                <td colspan="6" style="padding: 20px; text-align: center;">Нет сделок</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <span class="input-group-text">По:</span>
+                        <input type="date" name="end" class="form-control" value="{{ end }}">
+                    </div>
+                </div>
 
-<br>
-<a href="?export=csv" style="text-decoration: none; color: #007bff;">📁 Экспорт в CSV</a>
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="bi bi-funnel"></i> Применить фильтр
+                    </button>
+                    <a href="{% url 'list_deals' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-circle"></i> Сбросить
+                    </a>
+                    <div class="btn-group float-end">
+                        <a href="?export=csv" class="btn btn-outline-success">
+                            <i class="bi bi-file-earmark-excel"></i> CSV
+                        </a>
+                        <a href="?export=xlsx" class="btn btn-outline-success">
+                            <i class="bi bi-file-earmark-spreadsheet"></i> Excel
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Название</th>
+                            <th>Клиент</th>
+                            <th>Статус</th>
+                            <th>Дата создания</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for deal in deals %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'view_deal' deal.pk %}" class="text-decoration-none">
+                                    {{ deal.title }}
+                                </a>
+                            </td>
+                            <td>{{ deal.client.name }}</td>
+                            <td>
+                                <span class="badge
+                                    {% if deal.status == 'draft' %}bg-secondary
+                                    {% elif deal.status == 'sent' %}bg-info
+                                    {% elif deal.status == 'signed' %}bg-success
+                                    {% else %}bg-dark{% endif %}">
+                                    {{ deal.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ deal.created_at|date:"d.m.Y" }}</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'edit_deal' deal.pk %}" class="btn btn-outline-primary"
+                                       title="Редактировать">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'delete_deal' deal.pk %}" class="btn btn-outline-danger"
+                                       title="Удалить" onclick="return confirm('Удалить сделку?')">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4">
+                                <div class="text-muted">
+                                    <i class="bi bi-info-circle" style="font-size: 2rem;"></i>
+                                    <p class="mt-2">Нет сделок</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% if is_paginated %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1" aria-label="First">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
 
 {% endblock %}

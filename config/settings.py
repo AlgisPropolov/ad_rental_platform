@@ -1,17 +1,21 @@
+# C:\Users\user\Documents\GitHub\Task\ad_rental_platform\config\settings.py
 import os
 from pathlib import Path
+from datetime import timedelta
 
-# 📌 Базовая директория проекта
+# Базовая директория проекта
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# 🛡️ Безопасный режим для локальной разработки
-DEBUG = True
+# Безопасность
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-dev-key-only')
+DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 
-# 🌐 Разрешённые хосты
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+# Разрешённые хосты
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
 
-# 🧩 Установленные приложения
+# Установленные приложения
 INSTALLED_APPS = [
+    # Стандартные приложения Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -19,14 +23,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'core',    # основное приложение
-    'users',   # 🔥 добавили кастомных пользователей
+    # Сторонние приложения
+    'django_extensions',
+
+    # Локальные приложения (убедитесь, что пути верные)
+    'core.apps.CoreConfig',
+    'users.apps.UsersConfig',  # Добавил явное указание конфига
 ]
 
-# 👤 Указание кастомной модели пользователя
-AUTH_USER_MODEL = 'users.User'
-
-# ⚙️ Middleware
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -37,14 +41,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# 🔁 Основной файл маршрутов
 ROOT_URLCONF = 'config.urls'
 
-# 🎨 Настройка шаблонов
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'core' / 'templates'],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -57,14 +59,8 @@ TEMPLATES = [
     },
 ]
 
-# ✅ Указываем кастомную модель пользователя
-AUTH_USER_MODEL = 'users.User'
-
-
-# 🚀 WSGI-приложение
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# 🗄️ База данных (SQLite для разработки)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -72,34 +68,39 @@ DATABASES = {
     }
 }
 
-# 🛑 Проверка паролей (можно упростить в DEV)
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 8,
+        }
     },
 ]
 
-# 🌐 Локализация
+AUTH_USER_MODEL = 'users.User'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
 LANGUAGE_CODE = 'ru-ru'
 TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
+USE_L10N = True
 USE_TZ = True
 
-# 📁 Путь к статическим файлам
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# 📁 Путь к медиафайлам
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = BASE_DIR / 'media'
 
-# 🧂 Ключ безопасности (не показывать в проде!)
-SECRET_KEY = 'django-insecure-замени-на-свой-настоящий-ключ'
-
-# ✅ Значения по умолчанию для primary key
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-AUTH_USER_MODEL = 'users.User'
 
+if not DEBUG:
+    SECURE_HSTS_SECONDS = 3600
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
