@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Договор №{{ contract.number }}</h2>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Основная информация</h5>
+            <dl class="row">
+                <dt class="col-sm-3">Клиент</dt>
+                <dd class="col-sm-9">{{ contract.client }}</dd>
+                
+                <dt class="col-sm-3">Период</dt>
+                <dd class="col-sm-9">{{ contract.start_date }} - {{ contract.end_date }}</dd>
+                
+                <dt class="col-sm-3">Общая сумма</dt>
+                <dd class="col-sm-9">{{ contract.total_amount }} ₽</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Активы договора</h5>
+        </div>
+        <div class="card-body">
+            <form method="post" action="{% url 'contract-detail' pk=contract.pk %}">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        {{ asset_form.asset.label_tag }}
+                        {{ asset_form.asset }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ asset_form.slot.label_tag }}
+                        {{ asset_form.slot }}
+                    </div>
+                    <div class="col-md-2">
+                        {{ asset_form.price.label_tag }}
+                        {{ asset_form.price }}
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">Добавить</button>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-12">
+                        {{ asset_form.notes.label_tag }}
+                        {{ asset_form.notes }}
+                    </div>
+                </div>
+            </form>
+
+            <table class="table mt-4">
+                <thead>
+                    <tr>
+                        <th>Актив</th>
+                        <th>Период</th>
+                        <th>Цена</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for asset in assets %}
+                    <tr>
+                        <td>{{ asset.asset }}</td>
+                        <td>
+                            {% if asset.slot %}
+                                {{ asset.slot.start_date }} - {{ asset.slot.end_date }}
+                            {% else %}
+                                Без слота
+                            {% endif %}
+                        </td>
+                        <td>{{ asset.price }} ₽</td>
+                        <td>
+                            <form method="post" action="{% url 'contract-asset-delete' pk=asset.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">Нет добавленных активов</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Динамическая загрузка слотов при выборе актива
+    const assetSelect = document.querySelector('#id_asset');
+    const slotSelect = document.querySelector('#id_slot');
+    
+    assetSelect.addEventListener('change', function() {
+        const assetId = this.value;
+        if (assetId) {
+            fetch(`/api/assets/${assetId}/slots/`)
+                .then(response => response.json())
+                .then(data => {
+                    slotSelect.innerHTML = '';
+                    data.slots.forEach(slot => {
+                        const option = document.createElement('option');
+                        option.value = slot.id;
+                        option.textContent = `${slot.start_date} - ${slot.end_date}`;
+                        slotSelect.appendChild(option);
+                    });
+                });
+        } else {
+            slotSelect.innerHTML = '';
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,61 +1,32 @@
-{% extends "base.html" %}
-
-{% block title %}Объекты{% endblock %}
+{% extends 'base.html' %}
 
 {% block content %}
-<style>
-    .filter-form {
-        margin-bottom: 20px;
-    }
-    .filter-form input,
-    .filter-form select {
-        padding: 6px 10px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        margin-right: 10px;
-    }
-    .filter-form button {
-        padding: 6px 12px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-    .filter-form a {
-        margin-left: 10px;
-        text-decoration: none;
-        color: #555;
-        font-size: 14px;
-    }
-    .card {
-        background: white;
-        padding: 15px;
-        margin-bottom: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-</style>
+<h2>Рекламные активы</h2>
+<a href="{% url 'asset-create' %}" class="btn btn-primary mb-3">Добавить актив</a>
 
-<h1>🏙️ Список объектов</h1>
-
-<form method="get" class="filter-form">
-    {{ form.search }}
-    {{ form.asset_type }}
-    <button type="submit">🔍 Найти</button>
-    <a href="?">✖️ Очистить</a>
-</form>
-
-{% for asset in assets %}
-    <div class="card">
-        <h3>{{ asset.name }}</h3>
-        <p>📍 Тип: {{ asset.get_asset_type_display }}</p>
-        <p>🗺️ Адрес: {{ asset.location }}</p>
-        <p>⚙️ ID: {{ asset.id }}</p>
-    </div>
-{% empty %}
-    <p>Нет доступных объектов.</p>
-{% endfor %}
-
+<table class="table">
+    <thead>
+        <tr>
+            <th>Название</th>
+            <th>Тип</th>
+            <th>Зона</th>
+            <th>Местоположение</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for asset in assets %}
+        <tr>
+            <td>{{ asset.name }}</td>
+            <td>{{ asset.get_asset_type_display }}</td>
+            <td>{{ asset.get_zone_display }}</td>
+            <td>{{ asset.location }}</td>
+            <td>
+                <a href="{% url 'asset-edit' asset.pk %}" class="btn btn-sm btn-warning">Изменить</a>
+                <a href="{% url 'asset-delete' asset.pk %}" class="btn btn-sm btn-danger">Удалить</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}

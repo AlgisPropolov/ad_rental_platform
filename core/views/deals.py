@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.utils import timezone
 from django.http import HttpResponse
 from ..models import Deal, Client, Contract
-from ..forms import DealForm
+from core.forms.deal import DealForm
 import csv
 from datetime import timedelta
 

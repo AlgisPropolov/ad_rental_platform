@@ -1,4 +1,9 @@
 from .dashboard import dashboard_view
-from .availability import availability_view
 from .analytics import analytics_view
-# ... и все остальные представления
+from .availability import availability_view
+from .clients import *
+from .assets import *
+from .deals import *
+from .contracts import *
+from .payments import *
+from .tasks import *

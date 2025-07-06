@@ -1,36 +1,181 @@
 {% extends "base.html" %}
+{% load humanize %}
 
-{% block title %}Аналитика{% endblock %}
+{% block title %}Аналитика - {{ block.super }}{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1 class="mb-4">Аналитическая панель</h1>
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Аналитическая панель</h1>
+        <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="periodDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Период: {{ period_label }}
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="periodDropdown">
+                <li><a class="dropdown-item" href="?period=week">Неделя</a></li>
+                <li><a class="dropdown-item" href="?period=month">Месяц</a></li>
+                <li><a class="dropdown-item" href="?period=quarter">Квартал</a></li>
+                <li><a class="dropdown-item" href="?period=year">Год</a></li>
+            </ul>
+        </div>
+    </div>
 
+    <!-- Карточки с метриками -->
     <div class="row">
-        <div class="col-md-4">
-            <div class="card text-white bg-primary mb-3">
+        <!-- Всего сделок -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
                 <div class="card-body">
-                    <h5 class="card-title">Всего сделок</h5>
-                    <p class="card-text display-4">{{ deals_count }}</p>
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Всего сделок</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ deals_count|intcomma }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-handshake fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card text-white bg-success mb-3">
+
+        <!-- Активные сделки -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
-                    <h5 class="card-title">Активные</h5>
-                    <p class="card-text display-4">{{ active_deals_count }}</p>
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Активные сделки</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ active_deals_count|intcomma }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card text-white bg-info mb-3">
+
+        <!-- Завершенные сделки -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
                 <div class="card-body">
-                    <h5 class="card-title">Завершенные</h5>
-                    <p class="card-text display-4">{{ completed_deals_count }}</p>
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Завершенные</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ completed_deals_count|intcomma }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clipboard-check fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Доход -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Общий доход</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_income|intcomma }} ₽</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-ruble-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Графики -->
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Динамика сделок</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-area">
+                        <canvas id="dealsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Распределение по типам</h6>
+                </div>
+                <div class="card-body">
+                    <div class="chart-pie pt-4 pb-2">
+                        <canvas id="dealTypesChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Инициализация графиков
+document.addEventListener('DOMContentLoaded', function() {
+    // График динамики сделок
+    var ctx = document.getElementById('dealsChart').getContext('2d');
+    var dealsChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ deals_timeline_labels|safe }},
+            datasets: [{
+                label: 'Сделки',
+                data: {{ deals_timeline_data|safe }},
+                backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                borderColor: 'rgba(78, 115, 223, 1)',
+                pointBackgroundColor: 'rgba(78, 115, 223, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(78, 115, 223, 1)'
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Круговая диаграмма типов сделок
+    var ctx2 = document.getElementById('dealTypesChart').getContext('2d');
+    var dealTypesChart = new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: {{ deal_types_labels|safe }},
+            datasets: [{
+                data: {{ deal_types_data|safe }},
+                backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e'],
+                hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#dda20a'],
+                hoverBorderColor: "rgba(234, 236, 244, 1)",
+            }],
+        },
+        options: {
+            maintainAspectRatio: false,
+            cutout: '70%',
+        }
+    });
+});
+</script>
 {% endblock %}
