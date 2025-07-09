@@ -3,7 +3,7 @@ from .deal import DealForm
 from .contract import ContractForm, ContractAssetForm
 from .asset import AssetForm
 
-# Условный импорт для необязательных форм
+# Опциональные формы (если файлы существуют)
 try:
     from .payment import PaymentForm
 except ImportError:
@@ -16,15 +16,9 @@ except ImportError:
 
 __all__ = [
     'ClientForm',
+    'ClientForm',
     'DealForm',
     'ContractForm',
     'ContractAssetForm',
-    'AssetForm'
-]
-
-# Добавляем только если формы существуют
-if PaymentForm is not None:
-    __all__.append('PaymentForm')
-
-if TaskForm is not None:
-    __all__.append('TaskForm')
+    'AssetForm',
+] + (['PaymentForm'] if PaymentForm is not None else []) + (['TaskForm'] if TaskForm is not None else [])

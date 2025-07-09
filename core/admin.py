@@ -2,9 +2,10 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
 from .models import (
-    Client, Asset, Contract, 
-    AvailabilitySlot, Payment, 
+    Client, Asset, Contract,
+    AvailabilitySlot, Payment,
     Deal, DealTask, ContractAsset
 )
 
@@ -19,8 +20,8 @@ class BaseAdmin(admin.ModelAdmin):
 @admin.register(Client)
 class ClientAdmin(BaseAdmin):
     list_display = (
-        'name', 'inn', 'contact_person', 
-        'phone', 'email', 'is_vip', 
+        'name', 'inn', 'contact_person',
+        'phone', 'email', 'is_vip',
         'created_at', 'deals_link'
     )
     list_filter = ('is_vip', 'created_at')
@@ -49,7 +50,7 @@ class ClientAdmin(BaseAdmin):
 @admin.register(Asset)
 class AssetAdmin(BaseAdmin):
     list_display = (
-        'name', 'asset_type', 'zone', 
+        'name', 'asset_type', 'zone',
         'location', 'daily_rate', 'is_active',
         'contracts_link'
     )
@@ -90,7 +91,7 @@ class ContractAssetInline(admin.TabularInline):
 @admin.register(Contract)
 class ContractAdmin(BaseAdmin):
     list_display = (
-        'number', 'client_link', 'start_date', 
+        'number', 'client_link', 'start_date',
         'end_date', 'total_amount', 'payment_type',
         'signed', 'is_active', 'payments_link'
     )
@@ -132,7 +133,7 @@ class ContractAdmin(BaseAdmin):
 @admin.register(AvailabilitySlot)
 class AvailabilitySlotAdmin(BaseAdmin):
     list_display = (
-        'asset', 'start_date', 'end_date', 
+        'asset', 'start_date', 'end_date',
         'is_available', 'reserved_by_link',
         'duration_days'
     )
@@ -200,22 +201,28 @@ class DealAdmin(BaseAdmin):
 @admin.register(Payment)
 class PaymentAdmin(BaseAdmin):
     list_display = (
-        'contract_link', 'date', 'amount',
-        'is_confirmed', 'payment_method',
-        'confirmation_date'
+        'id', 'contract_link', 'amount',
+        'payment_method', 'date',
+        'is_confirmed', 'confirmation_date'
     )
     list_filter = ('is_confirmed', 'payment_method', 'date')
     search_fields = ('contract__number', 'transaction_id')
     list_editable = ('is_confirmed',)
+    date_hierarchy = 'date'
+    ordering = ('-date',)
     fieldsets = (
         (None, {
-            'fields': ('contract', 'date', 'amount')
-        }),
-        (_('Статус'), {
-            'fields': ('is_confirmed', 'confirmation_date')
+            'fields': ('contract', 'amount', 'date')
         }),
         (_('Способ оплаты'), {
             'fields': ('payment_method', 'transaction_id')
+        }),
+        (_('Статус'), {
+            'fields': ('is_confirmed', 'confirmation_date', 'status')
+        }),
+        (_('Дополнительно'), {
+            'fields': ('notes',),
+            'classes': ('collapse',)
         }),
         (_('Системная информация'), {
             'fields': ('created_at', 'updated_at'),

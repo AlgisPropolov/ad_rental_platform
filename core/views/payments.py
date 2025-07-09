@@ -1,26 +1,31 @@
-# core/views/payments.py
-from django.shortcuts import render, redirect, get_object_or_404
-from core.models import Payment, Contract
-from django import forms
+from django.views.generic import ListView, CreateView, DetailView
+from django.urls import reverse_lazy
+from ..models import Payment
+from core.forms.payment import PaymentForm  # Убедитесь, что у вас есть этот файл форм
 
+class PaymentListView(ListView):
+    model = Payment
+    template_name = 'core/payments/list.html'
+    context_object_name = 'payments'
+    paginate_by = 20
 
-class PaymentForm(forms.ModelForm):
-    class Meta:
-        model = Payment
-        fields = ['contract', 'date', 'amount', 'is_confirmed']
-        widgets = {
-            'date': forms.DateInput(attrs={'type': 'date'}),
-        }
+    def get_queryset(self):
+        return super().get_queryset().select_related('contract', 'contract__client')
 
+class PaymentCreateView(CreateView):
+    model = Payment
+    form_class = PaymentForm
+    template_name = 'core/payments/create.html'
+    success_url = reverse_lazy('payment-list')
 
-def list_payments_view(request):
-    payments = Payment.objects.select_related('contract').order_by('-date')
-    return render(request, 'core/payments/list.html', {'payments': payments})
+    def form_valid(self, form):
+        # Дополнительная логика при создании платежа
+        return super().form_valid(form)
 
+class PaymentDetailView(DetailView):
+    model = Payment
+    template_name = 'core/payments/detail.html'
+    context_object_name = 'payment'
 
-def create_payment_view(request):
-    form = PaymentForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        return redirect('list_payments')
-    return render(request, 'core/payments/create.html', {'form': form})
+    def get_queryset(self):
+        return super().get_queryset().select_related('contract', 'contract__client')

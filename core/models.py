@@ -1,4 +1,3 @@
-# C:\Users\user\Documents\GitHub\Task\ad_rental_platform\core\models.py
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator, RegexValidator
 from django.utils.translation import gettext_lazy as _
@@ -93,7 +92,8 @@ class Asset(BaseModel):
         max_digits=10,
         decimal_places=2,
         verbose_name=_("Дневная ставка"),
-        validators=[MinValueValidator(0)]
+        validators=[MinValueValidator(0)],
+        default=0.00
     )
     is_active = models.BooleanField(default=True, verbose_name=_("Активен"))
     notes = models.TextField(blank=True, verbose_name=_("Примечания"))
@@ -279,7 +279,8 @@ class Contract(BaseModel):
         max_digits=10,
         decimal_places=2,
         verbose_name=_("Общая сумма"),
-        validators=[MinValueValidator(0)]
+        validators=[MinValueValidator(0)],
+        default=0.00  # Добавлено значение по умолчанию
     )
     payment_type = models.CharField(
         max_length=10,
@@ -368,18 +369,41 @@ class ContractAsset(models.Model):
 
 class Payment(BaseModel):
     """Модель платежа"""
+    PAYMENT_METHODS = [
+        ('cash', 'Наличные'),
+        ('card', 'Карта'),
+        ('transfer', 'Банковский перевод'),
+    ]
+
+    STATUS_CHOICES = [
+        ('pending', 'Ожидает'),
+        ('completed', 'Завершён'),
+        ('failed', 'Неудачный'),
+    ]
+
     contract = models.ForeignKey(
         Contract,
         on_delete=models.CASCADE,
         related_name='payments',
         verbose_name=_("Договор")
     )
-    date = models.DateField(verbose_name=_("Дата платежа"))
     amount = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         verbose_name=_("Сумма"),
         validators=[MinValueValidator(0)]
+    )
+    date = models.DateField(verbose_name=_("Дата платежа"))
+    payment_method = models.CharField(
+        max_length=20,
+        choices=PAYMENT_METHODS,
+        verbose_name=_("Способ оплаты")
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending',
+        verbose_name=_("Статус")
     )
     is_confirmed = models.BooleanField(default=False, verbose_name=_("Подтвержден"))
     confirmation_date = models.DateTimeField(
@@ -387,17 +411,7 @@ class Payment(BaseModel):
         blank=True,
         verbose_name=_("Дата подтверждения")
     )
-    payment_method = models.CharField(
-        max_length=20,
-        choices=[
-            ('cash', _('Наличные')),
-            ('bank', _('Банковский перевод')),
-            ('card', _('Карта')),
-            ('other', _('Другое'))
-        ],
-        default='bank',
-        verbose_name=_("Способ оплаты")
-    )
+    notes = models.TextField(blank=True, verbose_name=_("Примечания"))
     transaction_id = models.CharField(
         max_length=100,
         blank=True,
@@ -405,9 +419,6 @@ class Payment(BaseModel):
     )
 
     def clean(self):
-        if self.is_confirmed and not self.confirmation_date:
-            self.confirmation_date = timezone.now()
-
         if self.date > timezone.now().date():
             raise ValidationError(_("Дата платежа не может быть в будущем"))
 
@@ -421,8 +432,8 @@ class Payment(BaseModel):
         indexes = [
             models.Index(fields=['contract']),
             models.Index(fields=['date']),
+            models.Index(fields=['status']),
             models.Index(fields=['is_confirmed']),
-            models.Index(fields=['payment_method']),
         ]
 
 

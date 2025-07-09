@@ -2,111 +2,95 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.utils import timezone
 from django.http import HttpResponse
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from ..models import Deal, Client, Contract
 from core.forms.deal import DealForm
 import csv
 from datetime import timedelta
 
 
-def list_deals_view(request):
-    # Получаем параметры фильтрации
-    query = request.GET.get('q', '')
-    status = request.GET.get('status', '')
-    start_date = request.GET.get('start', '')
-    end_date = request.GET.get('end', '')
+class DealListView(ListView):
+    model = Deal
+    template_name = 'core/deals/list.html'
+    context_object_name = 'deals'
+    paginate_by = 20
 
-    # Базовый запрос
-    deals = Deal.objects.select_related('client').all()
+    def get_queryset(self):
+        queryset = super().get_queryset().select_related('client')
+        query = self.request.GET.get('q', '')
+        status = self.request.GET.get('status', '')
+        start_date = self.request.GET.get('start', '')
+        end_date = self.request.GET.get('end', '')
 
-    # Применяем фильтры
-    if query:
-        deals = deals.filter(
-            Q(title__icontains=query) |
-            Q(client__name__icontains=query)
-        ).distinct()
+        if query:
+            queryset = queryset.filter(
+                Q(title__icontains=query) |
+                Q(client__name__icontains=query)
+            ).distinct()
 
-    if status:
-        deals = deals.filter(status=status)
+        if status:
+            queryset = queryset.filter(status=status)
 
-    if start_date:
-        deals = deals.filter(created_at__date__gte=start_date)
+        if start_date:
+            queryset = queryset.filter(created_at__date__gte=start_date)
 
-    if end_date:
-        deals = deals.filter(created_at__date__lte=end_date)
+        if end_date:
+            queryset = queryset.filter(created_at__date__lte=end_date)
 
-    # Контекст для шаблона
-    context = {
-        'deals': deals,
-        'query': query,
-        'status': status,
-        'start': start_date,
-        'end': end_date,
-        'today': timezone.now().date()
-    }
+        return queryset
 
-    # Обработка экспорта
-    export_format = request.GET.get('export')
-    if export_format == 'csv':
-        return generate_csv_export(deals)
-    elif export_format == 'xlsx':
-        return generate_excel_export(deals)
-
-    return render(request, 'core/deals/list.html', context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'query': self.request.GET.get('q', ''),
+            'status': self.request.GET.get('status', ''),
+            'start': self.request.GET.get('start', ''),
+            'end': self.request.GET.get('end', ''),
+            'today': timezone.now().date()
+        })
+        return context
 
 
-def create_deal_view(request):
-    if request.method == 'POST':
-        form = DealForm(request.POST)
-        if form.is_valid():
-            deal = form.save()
+class DealCreateView(CreateView):
+    model = Deal
+    form_class = DealForm
+    template_name = 'core/deals/create.html'
+    success_url = '/deals/'
 
-            # Проверяем, не существует ли уже договор для этой сделки
-            if not Contract.objects.filter(deal=deal).exists():
-                Contract.objects.create(
-                    client=deal.client,
-                    deal=deal,
-                    start_date=timezone.now().date(),
-                    end_date=timezone.now().date() + timedelta(days=30),
-                    price=0,
-                    signed=False
-                )
-            return redirect('list_deals')
-    else:
-        form = DealForm()
-
-    return render(request, 'core/deals/create.html', {'form': form})
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if not Contract.objects.filter(deal=self.object).exists():
+            Contract.objects.create(
+                client=self.object.client,
+                deal=self.object,
+                start_date=timezone.now().date(),
+                end_date=timezone.now().date() + timedelta(days=30),
+                price=0,
+                signed=False
+            )
+        return response
 
 
-def edit_deal_view(request, pk):
-    deal = get_object_or_404(Deal, pk=pk)
-
-    if request.method == 'POST':
-        form = DealForm(request.POST, instance=deal)
-        if form.is_valid():
-            form.save()
-            return redirect('list_deals')
-    else:
-        form = DealForm(instance=deal)
-
-    return render(request, 'core/deals/edit.html', {'form': form, 'deal': deal})
+class DealUpdateView(UpdateView):
+    model = Deal
+    form_class = DealForm
+    template_name = 'core/deals/edit.html'
+    success_url = '/deals/'
 
 
-def delete_deal_view(request, pk):
-    deal = get_object_or_404(Deal, pk=pk)
-
-    if request.method == 'POST':
-        deal.delete()
-        return redirect('list_deals')
-
-    return render(request, 'core/deals/delete.html', {'deal': deal})
+class DealDeleteView(DeleteView):
+    model = Deal
+    template_name = 'core/deals/delete.html'
+    success_url = '/deals/'
 
 
-def view_deal_view(request, pk):
-    deal = get_object_or_404(
-        Deal.objects.select_related('client').prefetch_related('contracts'),
-        pk=pk
-    )
-    return render(request, 'core/deals/view.html', {'deal': deal})
+class DealDetailView(DetailView):
+    model = Deal
+    template_name = 'core/deals/view.html'
+    context_object_name = 'deal'
+
+    def get_queryset(self):
+        return super().get_queryset().select_related('client').prefetch_related('contracts')
 
 
 def generate_csv_export(queryset):
@@ -131,6 +115,5 @@ def generate_csv_export(queryset):
 
 def generate_excel_export(queryset):
     """Генерация экспорта в Excel"""
-    # Здесь должна быть реализация экспорта в Excel
     # Временно возвращаем CSV, пока не реализован Excel экспорт
     return generate_csv_export(queryset)

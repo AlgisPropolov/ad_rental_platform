@@ -1,26 +1,24 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import User
-from .forms import CustomUserCreationForm, CustomUserChangeForm
+from .models import User  # Изменено с CustomUser на User
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
-    add_form = CustomUserCreationForm
-    form = CustomUserChangeForm
-    model = User
-    list_display = ("username", "email", "phone", "role", "is_staff", "is_active")
-    list_filter = ("role", "is_staff", "is_active")
+    list_display = ('username', 'email', 'phone', 'first_name', 'last_name', 'is_staff', 'is_verified')
+    list_filter = ('is_verified', 'is_staff', 'is_superuser')
     fieldsets = (
-        (None, {"fields": ("username", "password")}),
-        ("Личная информация", {"fields": ("email", "phone")}),
-        ("Права доступа", {"fields": ("role", "is_staff", "is_active", "groups", "user_permissions")}),
-        ("Дополнительно", {"fields": ("last_login", "date_joined")}),
+        (None, {'fields': ('username', 'password')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'email', 'phone', 'avatar')}),
+        ('Permissions', {
+            'fields': ('is_active', 'is_staff', 'is_superuser', 'is_verified', 'groups', 'user_permissions'),
+        }),
+        ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
     add_fieldsets = (
         (None, {
-            "classes": ("wide",),
-            "fields": ("username", "email", "phone", "role", "password1", "password2", "is_staff", "is_active")
+            'classes': ('wide',),
+            'fields': ('username', 'email', 'password1', 'password2'),
         }),
     )
-    search_fields = ("username", "email", "phone")
-    ordering = ("username",)
+    search_fields = ('username', 'email', 'first_name', 'last_name')
+    ordering = ('username',)

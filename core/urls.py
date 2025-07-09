@@ -1,65 +1,92 @@
 from django.urls import path
+from django.views.generic import RedirectView
 from core.views import (
     dashboard_view,
     analytics_view,
     availability_view,
-    clients,
-    assets,
-    deals,
-    contracts,
-    payments,
-    tasks
+    # Импортируем view напрямую
+    ClientListView,
+    ClientCreateView,
+    ClientDetailView,
+    ClientUpdateView,
+    ClientDeleteView,
+    AssetListView,
+    AssetCreateView,
+    AssetDetailView,
+    AssetUpdateView,
+    AssetDeleteView,
+    AssetSlotsView,
+    DealListView,
+    DealCreateView,
+    DealDetailView,
+    DealUpdateView,
+    DealDeleteView,
+    ContractListView,
+    ContractCreateView,
+    ContractDetailView,
+    ContractUpdateView,
+    ContractAssetDeleteView,
+    PaymentListView,
+    PaymentCreateView,
+    PaymentDetailView,
+    TaskListView,
+    TaskCreateView,
+    TaskDetailView,
+    TaskUpdateView,
+    TaskDeleteView
 )
 
-urlpatterns = [
-    # Dashboard
-    path('', dashboard_view, name='dashboard'),
+app_name = 'core'
 
-    # Analytics
+urlpatterns = [
+    # Dashboard и перенаправления
+    path('', dashboard_view, name='dashboard'),
+    path('home/', RedirectView.as_view(pattern_name='core:dashboard', permanent=False)),
+
+    # Аналитика
     path('analytics/', analytics_view, name='analytics'),
 
-    # Availability
+    # Доступность
     path('availability/', availability_view, name='availability'),
 
-    # Clients
-    path('clients/', clients.ClientListView.as_view(), name='client-list'),
-    path('clients/create/', clients.ClientCreateView.as_view(), name='client-create'),
-    path('clients/<int:pk>/', clients.ClientDetailView.as_view(), name='client-detail'),
-    path('clients/<int:pk>/edit/', clients.ClientUpdateView.as_view(), name='client-update'),
-    path('clients/<int:pk>/delete/', clients.ClientDeleteView.as_view(), name='client-delete'),
+    # Клиенты
+    path('clients/', ClientListView.as_view(), name='client-list'),
+    path('clients/create/', ClientCreateView.as_view(), name='client-create'),
+    path('clients/<int:pk>/', ClientDetailView.as_view(), name='client-detail'),
+    path('clients/<int:pk>/edit/', ClientUpdateView.as_view(), name='client-update'),
+    path('clients/<int:pk>/delete/', ClientDeleteView.as_view(), name='client-delete'),
 
-    # Assets
-    path('assets/', assets.AssetListView.as_view(), name='asset-list'),
-    path('assets/create/', assets.AssetCreateView.as_view(), name='asset-create'),
-    path('assets/<int:pk>/', assets.AssetDetailView.as_view(), name='asset-detail'),
-    path('assets/<int:pk>/edit/', assets.AssetUpdateView.as_view(), name='asset-update'),
-    path('assets/<int:pk>/delete/', assets.AssetDeleteView.as_view(), name='asset-delete'),
+    # Активы
+    path('assets/', AssetListView.as_view(), name='asset-list'),
+    path('assets/create/', AssetCreateView.as_view(), name='asset-create'),
+    path('assets/<int:pk>/', AssetDetailView.as_view(), name='asset-detail'),
+    path('assets/<int:pk>/edit/', AssetUpdateView.as_view(), name='asset-update'),
+    path('assets/<int:pk>/delete/', AssetDeleteView.as_view(), name='asset-delete'),
+    path('assets/<int:asset_id>/slots/', AssetSlotsView.as_view(), name='asset-slots'),
 
-    # Deals
-    path('deals/', deals.DealListView.as_view(), name='deal-list'),
-    path('deals/create/', deals.DealCreateView.as_view(), name='deal-create'),
-    path('deals/<int:pk>/', deals.DealDetailView.as_view(), name='deal-detail'),
-    path('deals/<int:pk>/edit/', deals.DealUpdateView.as_view(), name='deal-update'),
-    path('deals/<int:pk>/delete/', deals.DealDeleteView.as_view(), name='deal-delete'),
+    # Сделки
+    path('deals/', DealListView.as_view(), name='deal-list'),
+    path('deals/create/', DealCreateView.as_view(), name='deal-create'),
+    path('deals/<int:pk>/', DealDetailView.as_view(), name='deal-detail'),
+    path('deals/<int:pk>/edit/', DealUpdateView.as_view(), name='deal-update'),
+    path('deals/<int:pk>/delete/', DealDeleteView.as_view(), name='deal-delete'),
 
-    # Contracts
-    path('contracts/', contracts.ContractListView.as_view(), name='contract-list'),
-    path('contracts/create/', contracts.ContractCreateView.as_view(), name='contract-create'),
-    path('contracts/<int:pk>/', contracts.ContractDetailView.as_view(), name='contract-detail'),
-    path('contracts/<int:pk>/edit/', contracts.ContractUpdateView.as_view(), name='contract-update'),
-    path('contract-assets/<int:pk>/delete/',
-         contracts.ContractAssetDeleteView.as_view(),
-         name='contract-asset-delete'),
+    # Контракты
+    path('contracts/', ContractListView.as_view(), name='contract-list'),
+    path('contracts/create/', ContractCreateView.as_view(), name='contract-create'),
+    path('contracts/<int:pk>/', ContractDetailView.as_view(), name='contract-detail'),
+    path('contracts/<int:pk>/edit/', ContractUpdateView.as_view(), name='contract-update'),
+    path('contract-assets/<int:pk>/delete/', ContractAssetDeleteView.as_view(), name='contract-asset-delete'),
 
-    # Payments
-    path('payments/', payments.PaymentListView.as_view(), name='payment-list'),
-    path('payments/create/', payments.PaymentCreateView.as_view(), name='payment-create'),
-    path('payments/<int:pk>/', payments.PaymentDetailView.as_view(), name='payment-detail'),
+    # Платежи
+    path('payments/', PaymentListView.as_view(), name='payment-list'),
+    path('payments/create/', PaymentCreateView.as_view(), name='payment-create'),
+    path('payments/<int:pk>/', PaymentDetailView.as_view(), name='payment-detail'),
 
-    # Tasks
-    path('tasks/', tasks.TaskListView.as_view(), name='task-list'),
-    path('tasks/create/', tasks.TaskCreateView.as_view(), name='task-create'),
-    path('tasks/<int:pk>/', tasks.TaskDetailView.as_view(), name='task-detail'),
-    path('tasks/<int:pk>/edit/', tasks.TaskUpdateView.as_view(), name='task-update'),
-    path('tasks/<int:pk>/delete/', tasks.TaskDeleteView.as_view(), name='task-delete'),
+    # Задачи
+    path('tasks/', TaskListView.as_view(), name='task-list'),
+    path('tasks/create/', TaskCreateView.as_view(), name='task-create'),
+    path('tasks/<int:pk>/', TaskDetailView.as_view(), name='task-detail'),
+    path('tasks/<int:pk>/edit/', TaskUpdateView.as_view(), name='task-update'),
+    path('tasks/<int:pk>/delete/', TaskDeleteView.as_view(), name='task-delete'),
 ]

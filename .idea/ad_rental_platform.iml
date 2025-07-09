@@ -35,7 +35,14 @@
       <sourceFolder url="file://$MODULE_DIR$/core/templates/core/availability" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/core/templates/core/deal_tasks" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/core/api" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/core/management" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/core/management/commands" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/core/templates/assets" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/core/templates/core/tasks" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/templates" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/users/migrations" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/users/templates" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/users/templates/users" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.12 (golovastik4)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
