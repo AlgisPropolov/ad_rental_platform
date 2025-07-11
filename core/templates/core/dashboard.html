@@ -2,51 +2,96 @@
 {% block title %}CRM аренды — Главная{% endblock %}
 
 {% block content %}
-<h1>📊 Панель управления</h1>
+<div class="container">
+    <h1 class="my-4">📊 Панель управления</h1>
 
-<div class="card">
-    <h2>💰 Финансовая аналитика</h2>
-    <p>Общий доход: {{ finance.total_income }} ₽</p>
-    <p>Ожидается оплат: {{ finance.unpaid_amount }} ₽</p>
-</div>
+    <div class="row">
+        <!-- Финансовая аналитика -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="card-title h5">💰 Финансовая аналитика</h2>
+                    <div class="card-text">
+                        <p>Общий доход: {{ finance.total_income|default:"0" }} ₽</p>
+                        <p>Ожидается оплат: {{ finance.unpaid_amount|default:"0" }} ₽</p>
+                        <a href="{% url 'core:analytics' %}" class="btn btn-sm btn-outline-info mt-2">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<div class="card">
-    <h2>📍 Объекты</h2>
-    <p>Всего: {{ assets.total_assets }}</p>
-    <p>Занятых: {{ assets.used_assets }}</p>
-    <p>Свободных: {{ assets.available_assets }}</p>
-    <a href="{% url 'create_asset' %}" class="button">➕ Добавить объект</a>
-</div>
+        <!-- Объекты -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="card-title h5">📍 Объекты</h2>
+                    <div class="card-text">
+                        <p>Всего: {{ assets.total_assets|default:"0" }}</p>
+                        <p>Занятых: {{ assets.used_assets|default:"0" }}</p>
+                        <p>Свободных: {{ assets.available_assets|default:"0" }}</p>
+                        <div class="d-flex gap-2 mt-2">
+                            <a href="{% url 'core:asset-list' %}" class="btn btn-sm btn-info">Все объекты</a>
+                            <a href="{% url 'core:asset-create' %}" class="btn btn-sm btn-primary">➕ Добавить</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<div class="card">
-    <h2>🏢 Контрагенты</h2>
-    <a href="{% url 'create_client' %}" class="button">➕ Добавить клиента</a>
-</div>
+        <!-- Контрагенты -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="card-title h5">🏢 Контрагенты</h2>
+                    <div class="card-text">
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'core:client-list' %}" class="btn btn-sm btn-info">Все клиенты</a>
+                            <a href="{% url 'core:client-create' %}" class="btn btn-sm btn-primary">➕ Добавить</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div class="card">
-    <h2>📋 Задачи на ближайшие 3 дня</h2>
-    {% if tasks %}
-        <ul>
-            {% for task in tasks %}
-                <li>{{ task.description }} (до {{ task.due_date }})</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Нет срочных задач.</p>
-    {% endif %}
-</div>
+    <!-- Задачи -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2 class="card-title h5">📋 Задачи на ближайшие 3 дня</h2>
+            <div class="card-text">
+                {% if tasks %}
+                    <ul class="list-group mb-3">
+                        {% for task in tasks %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>{{ task.description }} (до {{ task.due_date|date:"d.m.Y" }})</span>
+                                <span class="badge bg-primary rounded-pill">{{ task.get_priority_display }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{% url 'core:task-list' %}" class="btn btn-sm btn-outline-secondary">Все задачи</a>
+                {% else %}
+                    <p class="text-muted">Нет срочных задач.</p>
+                    <a href="{% url 'core:task-create' %}" class="btn btn-sm btn-primary">Создать задачу</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 
-<div class="card">
-    <h2>🔗 Быстрые ссылки</h2>
-    <ul>
-        <li><a href="{% url 'list_clients' %}">👤 Все клиенты</a></li>
-        <li><a href="{% url 'list_assets' %}">🏙️ Все объекты</a></li>
-        <li><a href="{% url 'list_deals' %}">💼 Все сделки</a></li>
-        <li><a href="{% url 'list_contracts' %}">📜 Договоры</a></li>
-        <li><a href="{% url 'list_payments' %}">💰 Платежи</a></li>
-        <li><a href="{% url 'list_tasks' %}">📝 Задачи</a></li>
-        <li><a href="{% url 'availability' %}">📅 Шахматка</a></li>
-        <li><a href="{% url 'analytics' %}">📊 Аналитика</a></li>
-    </ul>
+    <!-- Быстрые ссылки -->
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title h5">🔗 Быстрые ссылки</h2>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{% url 'core:client-list' %}" class="btn btn-sm btn-outline-secondary">👤 Клиенты</a>
+                <a href="{% url 'core:asset-list' %}" class="btn btn-sm btn-outline-secondary">🏙️ Объекты</a>
+                <a href="{% url 'core:deal-list' %}" class="btn btn-sm btn-outline-secondary">💼 Сделки</a>
+                <a href="{% url 'core:contract-list' %}" class="btn btn-sm btn-outline-secondary">📜 Договоры</a>
+                <a href="{% url 'core:payment-list' %}" class="btn btn-sm btn-outline-secondary">💰 Платежи</a>
+                <a href="{% url 'core:task-list' %}" class="btn btn-sm btn-outline-secondary">📝 Задачи</a>
+                <a href="{% url 'core:availability' %}" class="btn btn-sm btn-outline-secondary">📅 Шахматка</a>
+                <a href="{% url 'core:analytics' %}" class="btn btn-sm btn-outline-secondary">📊 Аналитика</a>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

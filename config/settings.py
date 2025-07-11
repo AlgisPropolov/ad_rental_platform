@@ -23,6 +23,7 @@ INSTALLED_APPS = [
 
     # Third-party
     'django_extensions',
+    'debug_toolbar',  # Добавлен django-debug-toolbar
 
     # Local apps
     'users.apps.UsersConfig',
@@ -30,6 +31,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',  # Добавлен Debug Toolbar
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -128,6 +130,13 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 26214400  # 25MB
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 X_FRAME_OPTIONS = 'DENY'
 SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Debug Toolbar
+if DEBUG:
+    import socket
+
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
 
 # Email (для разработки)
 if DEBUG:

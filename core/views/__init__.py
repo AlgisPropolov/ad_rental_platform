@@ -1,10 +1,6 @@
-from .tasks import (
-    TaskListView,
-    TaskCreateView,
-    TaskDetailView,
-    TaskUpdateView,
-    TaskDeleteView
-)
+from .dashboard import DashboardView, dashboard_view
+from .analytics import AnalyticsView, analytics_view
+from .availability import AvailabilityView, availability_view
 from .clients import (
     ClientListView,
     ClientCreateView,
@@ -32,6 +28,7 @@ from .contracts import (
     ContractCreateView,
     ContractDetailView,
     ContractUpdateView,
+    ContractDeleteView,
     ContractAssetDeleteView
 )
 from .payments import (
@@ -39,55 +36,39 @@ from .payments import (
     PaymentCreateView,
     PaymentDetailView
 )
-from .dashboard import dashboard_view
-from .analytics import analytics_view
-from .availability import availability_view
+from .tasks import (
+    DealTaskListView as TaskListView,
+    DealTaskCreateView as TaskCreateView,
+    DealTaskDetailView as TaskDetailView,
+    DealTaskUpdateView as TaskUpdateView,
+    DealTaskDeleteView as TaskDeleteView
+)
 
-# Экспортируем все View напрямую (рекомендуемый способ)
 __all__ = [
-    # Основные view
-    'dashboard_view',
-    'analytics_view',
-    'availability_view',
+    # Dashboard
+    'DashboardView', 'AnalyticsView', 'AvailabilityView',
+    'dashboard_view', 'analytics_view', 'availability_view',
 
     # Clients
-    'ClientListView',
-    'ClientCreateView',
-    'ClientDetailView',
-    'ClientUpdateView',
-    'ClientDeleteView',
+    'ClientListView', 'ClientCreateView', 'ClientDetailView',
+    'ClientUpdateView', 'ClientDeleteView',
 
     # Assets
-    'AssetListView',
-    'AssetCreateView',
-    'AssetDetailView',
-    'AssetUpdateView',
-    'AssetDeleteView',
-    'AssetSlotsView',
+    'AssetListView', 'AssetCreateView', 'AssetDetailView',
+    'AssetUpdateView', 'AssetDeleteView', 'AssetSlotsView',
 
     # Deals
-    'DealListView',
-    'DealCreateView',
-    'DealDetailView',
-    'DealUpdateView',
-    'DealDeleteView',
+    'DealListView', 'DealCreateView', 'DealDetailView',
+    'DealUpdateView', 'DealDeleteView',
 
     # Contracts
-    'ContractListView',
-    'ContractCreateView',
-    'ContractDetailView',
-    'ContractUpdateView',
-    'ContractAssetDeleteView',
+    'ContractListView', 'ContractCreateView', 'ContractDetailView',
+    'ContractUpdateView', 'ContractDeleteView', 'ContractAssetDeleteView',
 
     # Payments
-    'PaymentListView',
-    'PaymentCreateView',
-    'PaymentDetailView',
+    'PaymentListView', 'PaymentCreateView', 'PaymentDetailView',
 
     # Tasks
-    'TaskListView',
-    'TaskCreateView',
-    'TaskDetailView',
-    'TaskUpdateView',
-    'TaskDeleteView'
+    'TaskListView', 'TaskCreateView', 'TaskDetailView',
+    'TaskUpdateView', 'TaskDeleteView'
 ]

@@ -40,8 +40,11 @@
       <sourceFolder url="file://$MODULE_DIR$/core/templates/assets" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/core/templates/core/tasks" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/templates" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/core/urls" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/users/migrations" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/users/templates" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/core/templates/contracts" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/templates/contracts" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/users/templates/users" isTestSource="false" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.12 (golovastik4)" jdkType="Python SDK" />

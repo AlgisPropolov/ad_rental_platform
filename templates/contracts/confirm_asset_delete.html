@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h4 class="mb-0">Удаление актива из договора</h4>
+        </div>
+        <div class="card-body">
+            <p class="lead">Вы уверены, что хотите удалить этот актив из договора?</p>
+            
+            <div class="alert alert-warning">
+                <strong>Актив:</strong> {{ contract_asset.asset }}<br>
+                <strong>Договор:</strong> №{{ contract_asset.contract.number }}<br>
+                <strong>Цена:</strong> {{ contract_asset.price }} ₽
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'contract-detail' pk=contract_asset.contract.pk %}" 
+                       class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Отмена
+                    </a>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Удалить актив
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

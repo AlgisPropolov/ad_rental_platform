@@ -1,114 +1,122 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views import View
-from django.views.generic import ListView
+from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.db.models import Sum
-from core.models import Contract, ContractAsset, Asset, AvailabilitySlot
+from django.db.models import Sum, Prefetch
+from core.models import Contract, ContractAsset, Payment
 from core.forms import ContractForm, ContractAssetForm
 
 
-class ContractListView(ListView):
+class ContractBaseView:
+    """Базовый класс для представлений договоров"""
     model = Contract
+    context_object_name = 'contract'
+
+
+class ContractListView(ContractBaseView, ListView):
     template_name = 'contracts/list.html'
-    context_object_name = 'contracts'
-    ordering = ['-created_at']
     paginate_by = 20
-    queryset = Contract.objects.select_related('client', 'deal').prefetch_related('contract_assets')
+    ordering = ['-created_at']
+
+    def get_queryset(self):
+        return super().get_queryset().select_related(
+            'client', 'deal'
+        ).prefetch_related(
+            Prefetch('contract_assets', queryset=ContractAsset.objects.select_related('asset')),
+            Prefetch('payments', queryset=Payment.objects.only('amount', 'date'))
+        ).annotate(
+            paid_amount=Sum('payments__amount')
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['total_contracts'] = self.get_queryset().count()
+        return context
 
 
-class ContractCreateView(View):
-    template_name = 'contracts/create.html'
+class ContractCreateView(ContractBaseView, CreateView):
+    form_class = ContractForm
+    template_name = 'contracts/form.html'
 
-    def get(self, request):
-        form = ContractForm()
-        return render(request, self.template_name, {'form': form})
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, f'Договор №{self.object.number} успешно создан')
+        return response
 
-    def post(self, request):
-        form = ContractForm(request.POST)
-        if form.is_valid():
-            contract = form.save()
-            messages.success(request, 'Договор успешно создан')
-            return redirect('contract-detail', pk=contract.pk)
-        messages.error(request, 'Исправьте ошибки в форме')
-        return render(request, self.template_name, {'form': form})
+    def get_success_url(self):
+        return reverse_lazy('contract-detail', kwargs={'pk': self.object.pk})
 
 
-class ContractDetailView(View):
+class ContractDetailView(ContractBaseView, DetailView):
     template_name = 'contracts/detail.html'
 
-    def get(self, request, pk):
-        contract = get_object_or_404(
-            Contract.objects.select_related('client', 'deal'),
-            pk=pk
+    def get_queryset(self):
+        return super().get_queryset().select_related(
+            'client', 'deal'
+        ).prefetch_related(
+            Prefetch('contract_assets', queryset=ContractAsset.objects.select_related('asset', 'slot')),
+            Prefetch('payments', queryset=Payment.objects.order_by('-date'))
         )
-        assets = contract.contract_assets.select_related('asset', 'slot')
-        asset_form = ContractAssetForm(contract=contract)
 
-        return render(request, self.template_name, {
-            'contract': contract,
-            'assets': assets,
-            'asset_form': asset_form,
-            'total_amount': assets.aggregate(total=Sum('price'))['total'] or 0
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        contract = self.object
+        context.update({
+            'asset_form': ContractAssetForm(contract=contract),
+            'paid_amount': contract.payments.aggregate(total=Sum('amount'))['total'] or 0,
+            'balance': contract.total_amount - (contract.payments.aggregate(total=Sum('amount'))['total'] or 0)
         })
+        return context
 
 
-class ContractUpdateView(View):
-    template_name = 'contracts/update.html'
+class ContractUpdateView(ContractBaseView, UpdateView):
+    form_class = ContractForm
+    template_name = 'contracts/form.html'
 
-    def get(self, request, pk):
-        contract = get_object_or_404(Contract, pk=pk)
-        form = ContractForm(instance=contract)
-        return render(request, self.template_name, {'form': form, 'contract': contract})
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, f'Договор №{self.object.number} успешно обновлен')
+        return response
 
-    def post(self, request, pk):
-        contract = get_object_or_404(Contract, pk=pk)
-        form = ContractForm(request.POST, instance=contract)
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Договор успешно обновлен')
+    def get_success_url(self):
+        return reverse_lazy('contract-detail', kwargs={'pk': self.object.pk})
+
+
+class ContractDeleteView(ContractBaseView, DeleteView):
+    template_name = 'contracts/confirm_delete.html'
+
+    def delete(self, request, *args, **kwargs):
+        contract = self.get_object()
+        if contract.payments.exists():
+            messages.error(
+                request,
+                'Нельзя удалить договор с привязанными платежами'
+            )
             return redirect('contract-detail', pk=contract.pk)
-        messages.error(request, 'Исправьте ошибки в форме')
-        return render(request, self.template_name, {'form': form, 'contract': contract})
+
+        response = super().delete(request, *args, **kwargs)
+        messages.success(request, f'Договор №{contract.number} успешно удален')
+        return response
+
+    def get_success_url(self):
+        return reverse_lazy('contract-list')
 
 
-class ContractAssetDeleteView(View):
-    def post(self, request, pk):
-        asset = get_object_or_404(
-            ContractAsset.objects.select_related('contract'),
-            pk=pk
-        )
-        contract = asset.contract
-        asset.delete()
+class ContractAssetDeleteView(DeleteView):
+    model = ContractAsset
+    template_name = 'contracts/confirm_asset_delete.html'
+    context_object_name = 'contract_asset'
 
-        # Обновляем сумму договора через агрегацию
+    def get_success_url(self):
+        contract_id = self.object.contract_id
+        messages.success(self.request, 'Актив успешно удален из договора')
+        return reverse_lazy('contract-detail', kwargs={'pk': contract_id})
+
+    def delete(self, request, *args, **kwargs):
+        response = super().delete(request, *args, **kwargs)
+        contract = self.object.contract
         contract.total_amount = contract.contract_assets.aggregate(
             total=Sum('price')
         )['total'] or 0
         contract.save()
-
-        messages.success(request, 'Актив успешно удален из договора')
-        return redirect('contract-detail', pk=contract.pk)
-
-
-# Альтернативные функциональные представления (опционально)
-def list_contracts_view(request):
-    contracts = Contract.objects.select_related('client', 'deal').order_by('-created_at')
-    return render(request, 'contracts/list.html', {
-        'contracts': contracts,
-        'total_contracts': contracts.count()
-    })
-
-
-def create_contract_view(request):
-    if request.method == 'POST':
-        form = ContractForm(request.POST)
-        if form.is_valid():
-            contract = form.save()
-            messages.success(request, 'Договор успешно создан')
-            return redirect('contract-detail', pk=contract.pk)
-        messages.error(request, 'Ошибка при создании договора')
-    else:
-        form = ContractForm()
-
-    return render(request, 'contracts/create.html', {'form': form})
+        return response
