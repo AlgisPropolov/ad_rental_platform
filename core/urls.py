@@ -62,7 +62,7 @@ urlpatterns = [
 
     # Assets
     path('assets/', AssetListView.as_view(), name='asset-list'),
-    path('assets/create/', AssetCreateView.as_view(), name='asset-create'),
+    path('assets/create/', AssetCreateView.as_view(), name='asset-create'),  # Используется в шаблонах
     path('assets/<int:pk>/', AssetDetailView.as_view(), name='asset-detail'),
     path('assets/<int:pk>/edit/', AssetUpdateView.as_view(), name='asset-update'),
     path('assets/<int:pk>/delete/', AssetDeleteView.as_view(), name='asset-delete'),
@@ -70,7 +70,7 @@ urlpatterns = [
 
     # Deals
     path('deals/', DealListView.as_view(), name='deal-list'),
-    path('deals/create/', DealCreateView.as_view(), name='deal-create'),
+    path('deals/create/', DealCreateView.as_view(), name='create_deal'),  # Изменено с deal-create на create_deal
     path('deals/<int:pk>/', DealDetailView.as_view(), name='deal-detail'),
     path('deals/<int:pk>/edit/', DealUpdateView.as_view(), name='deal-update'),
     path('deals/<int:pk>/delete/', DealDeleteView.as_view(), name='deal-delete'),
@@ -85,12 +85,12 @@ urlpatterns = [
 
     # Payments
     path('payments/', PaymentListView.as_view(), name='payment-list'),
-    path('payments/create/', PaymentCreateView.as_view(), name='payment-create'),
+    path('payments/create/', PaymentCreateView.as_view(), name='create_payment'),  # Изменено с payment-create на create_payment
     path('payments/<int:pk>/', PaymentDetailView.as_view(), name='payment-detail'),
 
     # Tasks
     path('tasks/', TaskListView.as_view(), name='task-list'),
-    path('tasks/create/', TaskCreateView.as_view(), name='task-create'),
+    path('tasks/create/', TaskCreateView.as_view(), name='task-create'),  # Используется в шаблонах
     path('tasks/<int:pk>/', TaskDetailView.as_view(), name='task-detail'),
     path('tasks/<int:pk>/edit/', TaskUpdateView.as_view(), name='task-update'),
     path('tasks/<int:pk>/delete/', TaskDeleteView.as_view(), name='task-delete'),
